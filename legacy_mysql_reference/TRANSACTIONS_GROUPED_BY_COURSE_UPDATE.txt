@@ -1,0 +1,28 @@
+STUDENT / FACULTY BORROWING TRANSACTIONS GROUPING UPDATE
+
+Admin and Staff Borrowing & Return page now separates borrower transactions as follows:
+
+1. Student transactions are grouped by official course:
+   - CCJS
+   - CITE
+   - COTE
+   - COHM
+   - COTM
+   - Legacy / Unassigned appears only when older records do not contain a course.
+
+2. The Student Transactions section includes course buttons with record counts.
+   Selecting CITE shows only CITE student transactions; the same behavior applies to every course.
+
+3. Faculty transactions are placed in their own separate Faculty Borrowing Transactions section.
+   The faculty Department / Office is shown under the borrower information.
+
+4. Existing transaction actions remain available:
+   - Approve / Reject
+   - Release
+   - Receive / Approve Return
+   - Good / Fair / Damaged condition processing
+   - Condition Report / Cost
+   - Clear All
+   - Back to Dashboard
+
+5. Student and Faculty self-service transaction pages remain unchanged and still show only the signed-in borrower's own records.

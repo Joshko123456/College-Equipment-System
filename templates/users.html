@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}Student, Faculty & Personnel Management | BCC Equipment Services{% endblock %}
+{% block heading %}People & Access Management{% endblock %}
+{% block content %}
+<section class="people-hero">
+  <div class="people-hero-copy">
+    <span class="panel-kicker">ADMINISTRATION • ACCESS CONTROL</span>
+    <h1>Manage students, faculty and personnel in one place.</h1>
+    <p>Create official student and faculty records, manage borrower self-activation, and create authorized personnel accounts.</p>
+    <div class="people-hero-actions">
+      <button type="button" onclick="openModal('studentModal')"><span>＋</span> Add Student Record</button>
+      <button type="button" class="ghost-light" onclick="openModal('staffModal')"><span>＋</span> Create Personnel Account</button>
+    <button type="button" class="ghost-light" onclick="openModal('facultyModal')"><span>＋</span> Add Faculty Record</button></div>
+  </div>
+  <div class="people-summary-grid">
+    <div class="people-summary"><span class="summary-icon">◎</span><div><small>Active student records</small><b>{{ records|length }}</b></div></div>
+    <div class="people-summary"><span class="summary-icon">♟</span><div><small>Personnel accounts</small><b>{{ personnel|length }}</b></div></div>
+    <div class="people-summary wide"><span class="summary-icon">✓</span><div><small>Borrower account flow</small><strong>Admin record → Student / Faculty self-activation</strong></div></div>
+  </div>
+</section>
+
+<div class="section-heading-row">
+  <div><span class="panel-kicker">STUDENT REGISTRY</span><h2>Student Records</h2><p>Students listed here can activate and use their personal borrowing account.</p></div>
+  <div class="modern-search"><span>⌕</span><input type="search" placeholder="Search student ID, name, program..." oninput="filterStudentRows(this.value)"></div>
+</div>
+
+{% for group in student_course_groups %}
+<div class="panel modern-panel people-panel student-course-section" data-course-group="{{group.key}}">
+  <div class="panel-title modern-panel-title">
+    <div><h3>{{group.label}} Student Directory</h3><span class="block">Delete removes unused accounts completely. Students with borrowing history are safely archived to preserve reports.</span></div>
+    <span class="count-pill">{{group.records|length}} active</span>
+  </div>
+  <div class="tablewrap modern-tablewrap">
+    <table class="people-table">
+      <thead><tr><th>Student</th><th>Program</th><th>Year / Section</th><th>Portal Account</th><th class="action-col">Action</th></tr></thead>
+      <tbody>
+      {% for u in group.records %}
+      <tr class="student-row" data-course-group="{{group.key}}" data-search="{{(u.student_id ~ ' ' ~ u.full_name ~ ' ' ~ (u.program or '') ~ ' ' ~ (u.year_level or '') ~ ' ' ~ (u.section or ''))|lower}}">
+        <td><div class="person-cell"><div class="person-avatar">{{u.full_name[0]|upper}}</div><div><b>{{u.full_name}}</b><span>{{u.student_id}}</span><small>{{u.email or 'No email provided'}}</small></div></div></td>
+        <td><span class="course-chip">{{u.program or 'Not specified'}}</span></td>
+        <td><b class="table-primary">{{u.year_level or '—'}}</b><small class="block">Section {{u.section or '—'}}</small></td>
+        <td>{% if u.account_id and u.account_active %}<span class="badge available">Activated</span>{% elif u.account_id %}<span class="badge rejected">Inactive</span>{% else %}<span class="badge pending">Waiting activation</span>{% endif %}</td>
+        <td class="action-col"><button type="button" class="delete-student-btn" onclick='openBorrowerDelete({{url_for("delete_student_record",record_id=u.id)|tojson}}, {{u.full_name|tojson}}, {{u.student_id|tojson}}, "Student")'><span>⌫</span> Delete</button></td>
+      </tr>
+      {% else %}
+      <tr class="course-empty-default"><td colspan="5"><div class="empty-state premium-empty"><span>♟</span><b>No active {{group.label}} student records yet</b><small>Add an official {{group.label}} student record to allow account activation.</small><button type="button" onclick="openModal('studentModal')">Add Student Record</button></div></td></tr>
+      {% endfor %}
+      <tr class="student-no-results" style="display:none"><td colspan="5"><div class="empty-state"><span>⌕</span><b>No matching {{group.label}} students</b><small>Try a different Student ID, name, year, or section.</small></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endfor %}
+
+<div class="section-heading-row personnel-heading">
+  <div><span class="panel-kicker">FACULTY BORROWERS</span><h2>Faculty</h2><p>Faculty are pre-registered by Admin, then activate their own account and private password just like students.</p></div>
+  <button type="button" class="soft-btn" onclick="openModal('facultyModal')">＋ Add Faculty Record</button>
+</div>
+
+<div class="panel modern-panel">
+  <div class="panel-title modern-panel-title"><div><h3>Faculty Directory</h3><span class="block">Registered faculty can request equipment, track approvals, submit returns and receive notifications.</span></div><span class="count-pill">{{faculty|length}} accounts</span></div>
+  <div class="tablewrap modern-tablewrap"><table class="people-table"><thead><tr><th>Faculty</th><th>Role</th><th>Department</th><th>Email</th><th>Status</th><th class="action-col">Action</th></tr></thead><tbody>
+    {% for u in faculty %}<tr><td><div class="person-cell"><div class="person-avatar staff-avatar">{{u.full_name[0]|upper}}</div><div><b>{{u.full_name}}</b><span>{{u.school_id}}</span></div></div></td><td><span class="badge released">{{u.role|capitalize}}</span></td><td>{{u.department or '—'}}</td><td>{{u.email or '—'}}</td><td>{% if u.active %}<span class="badge available">Activated</span>{% elif u.activation_required %}<span class="badge pending">Waiting activation</span>{% else %}<span class="badge rejected">Inactive</span>{% endif %}</td><td class="action-col"><button type="button" class="delete-student-btn" onclick='openBorrowerDelete({{url_for("delete_faculty_account",user_id=u.id)|tojson}}, {{u.full_name|tojson}}, {{u.school_id|tojson}}, "Faculty")'><span>⌫</span> Delete</button></td></tr>
+    {% else %}<tr><td colspan="6"><div class="empty-state"><b>No faculty accounts yet</b></div></td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+
+<div class="section-heading-row personnel-heading">
+  <div><span class="panel-kicker">AUTHORIZED PERSONNEL</span><h2>Administration & Staff</h2><p>Administrators and staff manage equipment, borrowing approvals and returns.</p></div>
+  <button type="button" class="soft-btn" onclick="openModal('staffModal')">＋ Create Personnel Account</button>
+</div>
+
+<div class="panel modern-panel">
+  <div class="panel-title modern-panel-title"><div><h3>Personnel Directory</h3><span class="block">Authorized accounts for equipment administration and operations.</span></div><span class="count-pill">{{personnel|length}} accounts</span></div>
+  <div class="tablewrap modern-tablewrap"><table class="people-table"><thead><tr><th>Personnel</th><th>Role</th><th>Department</th><th>Email</th><th>Status</th><th class="action-col">Action</th></tr></thead><tbody>
+    {% for u in personnel %}<tr><td><div class="person-cell"><div class="person-avatar staff-avatar">{{u.full_name[0]|upper}}</div><div><b>{{u.full_name}}</b><span>{{u.school_id}}</span></div></div></td><td><span class="badge {{'approved' if u.role=='admin' else 'released'}}">{{u.role|capitalize}}</span></td><td>{{u.department or '—'}}</td><td>{{u.email or '—'}}</td><td><span class="badge available">Active</span></td><td class="action-col">{% if u.id == current_user.id %}<span class="current-account-pill">Current account</span>{% else %}<button type="button" class="delete-student-btn" onclick='openAccountDelete({{url_for("delete_managed_account",user_id=u.id)|tojson}}, {{u.full_name|tojson}}, {{u.school_id|tojson}}, {{("Administrator" if u.role=="admin" else "Staff")|tojson}})'><span>⌫</span> Delete</button>{% endif %}</td></tr>
+    {% else %}<tr><td colspan="6"><div class="empty-state"><b>No personnel accounts</b></div></td></tr>{% endfor %}
+  </tbody></table></div>
+</div>
+
+<div class="modal" id="studentModal"><div class="modalbox modern-modalbox"><button class="x" type="button" onclick="closeModal('studentModal')">×</button>
+  <div class="modal-heading"><div class="modal-icon">♟</div><div><span class="panel-kicker">STUDENT REGISTRY</span><h2>Add Student Record</h2><p>Pre-register a student so they can create their own secure portal password.</p></div></div>
+  <form method="post" class="grid2 modern-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="record_type" value="student">
+    <div class="form-group"><label>Student ID <em>Required</em></label><input name="school_id" placeholder="e.g. 2026-00001" required><small>Use the official school-issued ID.</small></div>
+    <div class="form-group"><label>Full Name <em>Required</em></label><input name="full_name" placeholder="Student full name" required></div>
+    <div class="form-group"><label>Email Address</label><input type="email" name="email" placeholder="student@example.com"></div>
+    <div class="form-group"><label>Course <em>Required</em></label><select name="department" required><option value="">Select course</option><option value="CCJS">CCJS</option><option value="CITE">CITE</option><option value="COTE">COTE</option><option value="COHM">COHM</option><option value="COTM">COTM</option></select><small>Select the student's official college/course group.</small></div>
+    <div class="form-group"><label>Year Level</label><select name="year_level"><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>5th Year</option></select></div>
+    <div class="form-group"><label>Section</label><input name="section" placeholder="e.g. A"></div>
+    <div class="full form-note"><span>i</span><p>The student will create their own password from the <b>Activate Account</b> page. Administrators never need to know the student's personal password.</p></div>
+    <div class="full modal-actions"><button type="button" class="cancel-btn" onclick="closeModal('studentModal')">Cancel</button><button type="submit">Save Student Record <b>→</b></button></div>
+  </form>
+</div></div>
+
+<div class="modal" id="facultyModal"><div class="modalbox modern-modalbox"><button class="x" type="button" onclick="closeModal('facultyModal')">×</button>
+  <div class="modal-heading"><div class="modal-icon gold">◆</div><div><span class="panel-kicker">FACULTY REGISTRY</span><h2>Create Faculty Record</h2><p>Pre-register a faculty borrower. The faculty member will activate the account and create their own private password.</p></div></div>
+  <form method="post" class="grid2 modern-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="record_type" value="personnel"><input type="hidden" name="role" value="faculty">
+    <div class="full form-section-label"><span>01</span><div><b>Faculty information</b><small>Official identity used for self-activation</small></div></div>
+    <div class="form-group"><label>Faculty / Employee ID <em>Required</em></label><input name="school_id" placeholder="Faculty ID" required></div>
+    <div class="form-group"><label>Full Name <em>Required</em></label><input name="full_name" placeholder="Full name" required></div>
+    <div class="form-group"><label>Email Address</label><input type="email" name="email" placeholder="College email"></div>
+    <div class="form-group"><label>Department / Office <em>Required</em></label><select name="department" required><option value="">Select department / office</option><option value="CCJS">CCJS</option><option value="CITE">CITE</option><option value="COHM">COHM</option><option value="COTM">COTM</option></select><small>Select the faculty member's official department / office.</small></div>
+    <div class="full form-note"><span>i</span><p><b>No password is created or displayed here.</b> The faculty member must open <b>Activate Account</b>, enter the registered Faculty ID, create a private password, and accept the borrower agreement before the account becomes active.</p></div>
+    <div class="full modal-actions"><button type="button" class="cancel-btn" onclick="closeModal('facultyModal')">Cancel</button><button type="submit">Save Faculty Record <b>→</b></button></div>
+  </form>
+</div></div>
+
+<div class="modal" id="staffModal"><div class="modalbox modern-modalbox"><button class="x" type="button" onclick="closeModal('staffModal')">×</button>
+  <div class="modal-heading"><div class="modal-icon gold">◆</div><div><span class="panel-kicker">PERSONNEL ACCOUNT</span><h2>Create Personnel Account</h2><p>Create a secure account for an administrator or equipment staff member.</p></div></div>
+  <form method="post" class="grid2 modern-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="record_type" value="personnel">
+    <div class="full form-section-label"><span>01</span><div><b>Personal information</b><small>Basic account identity</small></div></div>
+    <div class="form-group"><label>Employee / School ID <em>Required</em></label><input name="school_id" placeholder="Personnel ID" required></div>
+    <div class="form-group"><label>Full Name <em>Required</em></label><input name="full_name" placeholder="Full name" required></div>
+    <div class="form-group"><label>Email Address</label><input type="email" name="email" placeholder="College email"></div>
+    <div class="form-group"><label>Department / Office</label><input name="department" placeholder="Department / Office"></div>
+    <div class="full form-section-label"><span>02</span><div><b>Access & security</b><small>Choose the role and initial password</small></div></div>
+    <div class="form-group"><label>Role</label><select name="role"><option value="staff">Equipment Staff</option><option value="admin">Administrator</option></select><small>Administrators and staff use the personnel sign-in page.</small></div>
+    <div class="form-group"><label>Account Password <em>Required</em></label><div class="input-shell"><span>◆</span><input id="personnelPassword" type="password" name="password" minlength="6" placeholder="Minimum 6 characters" required><button type="button" class="peek" onclick="togglePassword('personnelPassword',this)">Show</button></div><small>Share it privately and ask the user to keep it secure.</small></div>
+    <div class="full modal-actions"><button type="button" class="cancel-btn" onclick="closeModal('staffModal')">Cancel</button><button type="submit">Create Personnel Account <b>→</b></button></div>
+  </form>
+</div></div>
+
+<div class="modal" id="deleteBorrowerModal"><div class="modalbox delete-confirm-box"><button class="x" type="button" onclick="closeModal('deleteBorrowerModal')">×</button>
+  <div class="danger-icon">!</div><span class="panel-kicker danger-kicker" id="deleteBorrowerKicker">REMOVE BORROWER</span><h2 id="deleteBorrowerTitle">Delete this borrower?</h2>
+  <p id="deleteBorrowerText">This action will remove the borrower from the active administration list.</p>
+  <div class="delete-warning"><span>i</span><div><b>Records are protected</b><small>Student and Faculty accounts use the same delete rule: unused accounts are deleted completely; accounts with borrowing/return history are archived so transaction records remain available.</small></div></div>
+  <form method="post" id="deleteBorrowerForm"><input type="hidden" name="_csrf" value="{{csrf_token}}"><div class="modal-actions"><button type="button" class="cancel-btn" id="deleteBorrowerCancel" onclick="closeModal('deleteBorrowerModal')">Keep Account</button><button type="submit" class="dangerbtn" id="deleteBorrowerSubmit">Yes, Remove Account</button></div></form>
+</div></div>
+
+<div class="modal" id="deleteAccountModal"><div class="modalbox delete-confirm-box"><button class="x" type="button" onclick="closeModal('deleteAccountModal')">×</button>
+  <div class="danger-icon">!</div><span class="panel-kicker danger-kicker">REMOVE ACCOUNT</span><h2 id="deleteAccountTitle">Delete this account?</h2>
+  <p id="deleteAccountText">This action will remove the account from the active directory.</p>
+  <div class="delete-warning"><span>i</span><div><b>Historical records are protected</b><small>If this personnel account already appears in approval, damage, assessment, or payment history, it will be archived instead of permanently erased.</small></div></div>
+  <form method="post" id="deleteAccountForm"><input type="hidden" name="_csrf" value="{{csrf_token}}"><div class="modal-actions"><button type="button" class="cancel-btn" onclick="closeModal('deleteAccountModal')">Keep Account</button><button type="submit" class="dangerbtn">Yes, Remove Account</button></div></form>
+</div></div>
+{% endblock %}

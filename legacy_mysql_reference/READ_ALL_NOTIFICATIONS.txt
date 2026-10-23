@@ -1,0 +1,5 @@
+READ ALL NOTIFICATIONS
+
+For Admin, Staff, Students and Faculty: open Notifications and click Read All. All notifications belonging to the signed-in account are marked read. The unread badges refresh, and messages stay available. Notifications received afterward remain unread until opened or marked read.
+
+Replace application files and restart app.py. Keep your existing database and configuration. No new database migration is needed for this feature.

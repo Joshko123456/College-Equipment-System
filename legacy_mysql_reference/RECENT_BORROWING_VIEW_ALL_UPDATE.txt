@@ -1,0 +1,8 @@
+RECENT BORROWING TRANSACTION VIEW ALL UPDATE
+
+- Added Back to Dashboard on the full Borrowing & Return transaction page.
+- Added Clear All on the full transaction page for Student, Faculty, Admin and Staff views.
+- Clear All safely clears completed/rejected transaction history from that user's current view only.
+- Active Pending, Approved, Released and Overdue requests remain visible so required borrowing/return work cannot be accidentally hidden.
+- Official database records are not deleted. Reports, damage/cost records and transaction history remain preserved.
+- New transactions created after Clear All appear automatically.

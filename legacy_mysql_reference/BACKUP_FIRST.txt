@@ -1,0 +1,9 @@
+BEFORE MAJOR DATABASE CHANGES
+Export the college_equipment database from phpMyAdmin:
+1. Open phpMyAdmin.
+2. Select college_equipment.
+3. Click Export.
+4. Choose Quick > SQL > Export.
+5. Keep the .sql backup before changing database structure.
+
+For this STABLE AUTH build, an existing database does NOT need to be deleted or re-imported.

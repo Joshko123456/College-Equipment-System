@@ -1,0 +1,10 @@
+{% from 'mobile_icons.html' import icon %}
+{% set borrower = current_user.role in ['student','faculty'] %}
+{% set borrowing_url = url_for('student_requests',scope=student_scope) if borrower else url_for('requests_page') %}
+<div class="phone-dashboard-lists">
+<section class="phone-section"><header><h2>{{icon('clock')}} Recent Borrowing</h2><a href="{{borrowing_url}}">View All {{icon('arrow')}}</a></header>
+{% for r in rows %}<a class="phone-loan" href="{{borrowing_url}}#request-{{r.id}}"><img src="{{equipment_image(r)}}" alt="{{r.name}}" loading="lazy"><div class="phone-loan-copy"><b>{{r.name}}</b><small>{{r.model or 'College equipment'}}</small>{% if not borrower %}<small>{{r.full_name}}</small>{% endif %}<span>Due: {{r.due_date}}</span></div><div class="phone-loan-state"><span class="badge {{r.status|lower}}">{{r.status}}</span><small>#{{r.id}}</small></div>{{icon('arrow')}}</a>{% else %}<p class="phone-empty">No borrowing transactions yet.</p>{% endfor %}
+</section>
+<section class="phone-section"><header><h2>{{icon('bell')}} Notifications</h2><a href="{{url_for('student_notifications',scope=student_scope) if borrower else url_for('notifications')}}">View All {{icon('arrow')}}</a></header>
+{% for n in recent_notifications %}<a class="phone-notice {{'unread' if not n.is_read else ''}}" href="{{url_for('student_notification_detail',scope=student_scope,id=n.id) if borrower else url_for('notification_detail',id=n.id)}}"><span class="phone-notice-icon">{{icon('bell')}}</span><div><b>{{n.message}}</b><small>{{n.created_at}}</small></div></a>{% else %}<p class="phone-empty">You're all caught up. New account updates will appear here.</p>{% endfor %}
+</section></div>

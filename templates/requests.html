@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% block heading %}Borrowing & Return{% endblock %}
+
+{% macro admin_transaction_table(group_rows, empty_title, empty_text, course_filter=false) -%}
+<div class="tablewrap">
+  <table class="transaction-table">
+    <tr>
+      <th>ID</th><th>Borrower</th><th>Equipment</th><th>Qty</th><th>Borrow</th><th>Due</th><th>Status</th><th>Return Condition</th><th>Action</th>
+    </tr>
+    {% for r in group_rows %}
+    <tr id="request-{{r.id}}"{% if course_filter %} data-student-course="{{r.borrower_group}}" class="student-course-row{% if r.borrower_group != active_student_course %} course-hidden{% endif %}{% if r.return_requested_at and r.status in ['Released','Overdue'] %} return-awaiting-row{% endif %}"{% else %} class="{% if r.return_requested_at and r.status in ['Released','Overdue'] %}return-awaiting-row{% endif %}"{% endif %}>
+      <td><span class="id-tag">#{{r.id}}</span></td>
+      <td>
+        <b>{{r.full_name}}</b>
+        <small class="block">{{r.school_id}} · {{r.borrower_role|capitalize}}</small>
+        {% if r.borrower_role == 'student' %}<small class="borrower-group-tag">Course: {{'Legacy / Unassigned' if r.borrower_group=='UNASSIGNED' else r.borrower_group}}</small>{% endif %}
+        {% if r.borrower_role == 'faculty' %}<small class="borrower-group-tag faculty-group-tag">Department / Office: {{r.borrower_group}}</small>{% endif %}
+      </td>
+      <td><b>{{r.name}}</b><small class="block">Model: {{r.model}}</small><small class="block">{{r.asset_code}}</small><small class="block">Serials: {{r.unit_serials|join(', ') if r.unit_serials else ('Selected at release' if r.status in ['Pending','Approved'] else 'Not recorded in legacy transaction')}}</small></td>
+      <td>{{r.quantity}}</td>
+      <td>{{r.borrow_date}}</td>
+      <td><span class="due-date-cell">{{r.due_date}}</span></td>
+      <td>
+        <span class="badge {{r.status|lower}}">{{r.status}}</span>
+        {% if r.return_requested_at and r.status in ['Released','Overdue'] %}<small class="return-submitted-label">Return submitted</small>{% endif %}
+      </td>
+      <td>
+        {% if r.status=='Returned' %}
+          <span class="condition-badge condition-{{(r.return_condition or 'unknown')|lower|replace(' ','-')}}">{{r.return_condition or 'Recorded'}}</span>
+        {% else %}
+          <span class="muted-dash">—</span>
+        {% endif %}
+      </td>
+      <td>
+        <div class="actions return-admin-actions">
+          {% if r.status=='Pending' %}
+            <form method="post" action="{{url_for('request_action',id=r.id,action='approve')}}"><input type="hidden" name="_csrf" value="{{csrf_token}}"><button>Approve</button></form>
+            <form method="post" action="{{url_for('request_action',id=r.id,action='reject')}}"><input type="hidden" name="_csrf" value="{{csrf_token}}"><button class="dangerbtn">Reject</button></form>
+          {% elif r.status=='Approved' %}
+            <form method="post" action="{{url_for('request_action',id=r.id,action='release')}}"><input type="hidden" name="_csrf" value="{{csrf_token}}"><button>Release</button><small class="block">Available units and their serial numbers are assigned automatically.</small></form>
+          {% elif r.status in ['Released','Overdue'] %}
+            <div class="inspection-action-box {% if r.return_requested_at %}submitted{% endif %}">
+              {% if r.return_requested_at %}<small class="inspection-kicker">BORROWER RETURN SUBMITTED</small>{% else %}<small class="inspection-kicker">RECEIVE / INSPECT RETURN</small>{% endif %}
+              <form method="post" action="{{url_for('request_action',id=r.id,action='return')}}" class="inspection-form" data-qty="{{r.quantity}}" data-fair-cost="{{r.fair_cost}}" data-damage-cost="{{r.damage_cost}}">
+                <input type="hidden" name="_csrf" value="{{csrf_token}}">
+                <select name="return_condition" aria-label="Return condition" onchange="updateReturnCost(this.form)">
+                  <option value="Good">Good</option><option value="Fair">Fair</option><option value="Damaged">Damaged</option>
+                </select>
+                <label>Total Fair / Damage Cost (PHP)<input name="condition_cost" type="number" min="0" max="99999999.99" step="0.01" value="0" disabled aria-label="Total condition cost"></label><small>Type the total for this borrowing, not the cost per unit. Good returns cost PHP 0.00.</small>
+                <input name="remarks" placeholder="Inspection note for Fair/Damaged (optional)" aria-label="Inspection notes">
+                <button type="submit">{{'Approve Return' if r.return_requested_at else 'Receive Return'}}</button>
+                <small class="auto-cost-preview" data-auto-cost-preview>Good: condition note and PHP 0.00.</small>
+              </form>
+            </div>
+          {% else %}
+            <span class="completed-action">Completed</span>
+          {% endif %}
+        </div>
+        {% if r.status in ['Released','Overdue'] or (r.status=='Returned' and r.return_condition in ['Fair','Damaged']) %}<a class="text-link" href="{{url_for('personnel_damage',id=r.id)}}">Condition Report / Cost</a>{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr class="group-empty-row"><td colspan="9"><div class="empty-state"><span>⇄</span><b>{{empty_title}}</b><small>{{empty_text}}</small></div></td></tr>
+    {% endfor %}
+  </table>
+</div>
+{%- endmacro %}
+
+{% block content %}
+<div class="toolbar transaction-toolbar">
+  <div>
+    <span class="panel-kicker">BORROWING WORKFLOW</span>
+    <h3>{{'My Borrowing Transactions' if current_user.role in ['student','faculty'] else 'Borrowing & Return Operations'}}</h3>
+    <small>{{'Track approvals, due dates, return submission and inspection results.' if current_user.role in ['student','faculty'] else 'Review requests, release equipment, receive returns and record equipment condition.'}}</small>
+  </div>
+  <div class="transaction-page-actions">
+    <span class="role-chip"><i></i>{{current_user.role|capitalize}} View</span>
+    <a class="transaction-back-btn" href="{% if current_user.role in ['student','faculty'] %}{{url_for('student_dashboard',scope=student_scope)}}{% else %}{{url_for('admin_dashboard')}}{% endif %}"><span>←</span> Back to Dashboard</a>
+    <form method="post" action="{% if current_user.role in ['student','faculty'] %}{{url_for('student_requests_clear_all',scope=student_scope)}}{% else %}{{url_for('requests_clear_all')}}{% endif %}" onsubmit="return confirm('Clear the completed borrowing transaction history from this view? Active requests will stay visible and official records will remain saved for reports.')">
+      <input type="hidden" name="_csrf" value="{{csrf_token}}">
+      <button class="transaction-clear-btn" type="submit"><span>×</span> Clear All</button>
+    </form>
+  </div>
+</div>
+
+{% if current_user.role in ['student','faculty'] %}
+<div class="return-guide">
+  <div class="return-guide-icon">↩</div>
+  <div>
+    <b>Equipment Return Process</b>
+    <p>You can use <strong>Return Equipment</strong> any time after the equipment is released, including before the due date. Admin and Staff will be notified. Bring the item to them for inspection and return approval. You will receive a notification with the recorded condition: <strong>Good, Fair, or Damaged</strong>. <strong>Fair and Damaged returns require an explanation, responsibility acknowledgment and the assessed condition cost. Good returns include a condition note and PHP 0.00.</strong></p>
+  </div>
+</div>
+
+<div class="panel transaction-panel">
+  <div class="panel-title">
+    <div><span class="panel-kicker">TRANSACTION LOG</span><h3>Request History</h3></div>
+    <span>{{rows|length}} record{{'' if rows|length==1 else 's'}}</span>
+  </div>
+  <div class="tablewrap">
+    <table class="transaction-table">
+      <tr><th>ID</th><th>Equipment</th><th>Qty</th><th>Borrow</th><th>Due</th><th>Status</th><th>Return Condition</th><th>Action</th></tr>
+      {% for r in rows %}
+      <tr id="request-{{r.id}}" class="{% if r.return_requested_at and r.status in ['Released','Overdue'] %}return-awaiting-row{% endif %}">
+        <td><span class="id-tag">#{{r.id}}</span></td>
+        <td><b>{{r.name}}</b><small class="block">Model: {{r.model}}</small><small class="block">{{r.asset_code}}</small><small class="block">Serials: {{r.unit_serials|join(', ') if r.unit_serials else ('Selected at release' if r.status in ['Pending','Approved'] else 'Not recorded in legacy transaction')}}</small></td>
+        <td>{{r.quantity}}</td><td>{{r.borrow_date}}</td><td><span class="due-date-cell">{{r.due_date}}</span></td>
+        <td><span class="badge {{r.status|lower}}">{{r.status}}</span>{% if r.return_requested_at and r.status in ['Released','Overdue'] %}<small class="return-submitted-label">Return submitted</small>{% endif %}</td>
+        <td>{% if r.status=='Returned' %}<span class="condition-badge condition-{{(r.return_condition or 'unknown')|lower|replace(' ','-')}}">{{r.return_condition or 'Recorded'}}</span>{% else %}<span class="muted-dash">—</span>{% endif %}</td>
+        <td>
+          <div class="student-return-action">
+            {% if r.status=='Returned' %}<span class="completed-action">✓ Return completed</span>
+            {% elif r.return_requested_at and r.status in ['Released','Overdue'] %}<span class="inspection-wait"><i>◷</i> Awaiting return approval</span>
+            {% elif r.can_request_return %}
+              <form method="post" action="{{url_for('student_request_return',scope=student_scope,id=r.id)}}" onsubmit="return confirm('Submit {{r.name}} for return? After submitting, bring the equipment to Admin/Staff for inspection.')">
+                <input type="hidden" name="_csrf" value="{{csrf_token}}"><button class="return-equipment-btn" type="submit"><span>↩</span> Return Equipment</button>
+              </form>
+            {% else %}<span class="muted-action">No action yet</span>{% endif %}
+          </div>
+          {% if r.status in ['Released','Overdue'] or (r.status=='Returned' and r.return_condition in ['Fair','Damaged']) %}<a class="text-link" href="{{url_for('borrower_damage',scope=student_scope,id=r.id)}}">Condition Report / Cost</a>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8"><div class="empty-state"><span>⇄</span><b>No borrowing transactions found</b><small>Your submitted requests will appear here.</small></div></td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+
+{% else %}
+<div class="transaction-group-summary">
+  <div class="transaction-group-summary-card student-summary-card">
+    <span>STUDENT TRANSACTIONS</span><b>{{student_rows|length}}</b><small>Separated by official course</small>
+  </div>
+  <div class="transaction-group-summary-card faculty-summary-card">
+    <span>FACULTY TRANSACTIONS</span><b>{{faculty_rows|length}}</b><small>Separate faculty borrowing log</small>
+  </div>
+</div>
+
+<div class="panel transaction-panel course-transaction-panel">
+  <div class="panel-title course-panel-title">
+    <div><span class="panel-kicker">STUDENT TRANSACTION LOG</span><h3>Student Borrowing Transactions by Course</h3><small>Choose a course. Only students from that course are shown in the table.</small></div>
+    <span>{{student_rows|length}} student record{{'' if student_rows|length==1 else 's'}}</span>
+  </div>
+  <div class="course-filter-bar" role="tablist" aria-label="Student course transaction filters">
+    {% for course in transaction_course_options %}
+      <button type="button" class="course-filter-btn{% if course==active_student_course %} active{% endif %}" data-course-filter="{{course}}" role="tab" aria-selected="{{'true' if course==active_student_course else 'false'}}">
+        <span>{{'Legacy / Unassigned' if course=='UNASSIGNED' else course}}</span><b>{{student_course_counts.get(course,0)}}</b>
+      </button>
+    {% endfor %}
+  </div>
+  {{ admin_transaction_table(student_rows, 'No student transactions in this course', 'Borrowing transactions for the selected student course will appear here.', true) }}
+  <div class="course-filter-empty" id="courseFilterEmpty" hidden>
+    <div class="empty-state"><span>▤</span><b>No transactions for this course</b><small>Choose another course or wait for a student from this course to submit a borrowing request.</small></div>
+  </div>
+</div>
+
+<div class="panel transaction-panel faculty-transaction-panel">
+  <div class="panel-title">
+    <div><span class="panel-kicker">FACULTY TRANSACTION LOG</span><h3>Faculty Borrowing Transactions</h3><small>Faculty borrowing records are kept separate from all student course transactions.</small></div>
+    <span>{{faculty_rows|length}} faculty record{{'' if faculty_rows|length==1 else 's'}}</span>
+  </div>
+  {{ admin_transaction_table(faculty_rows, 'No faculty borrowing transactions found', 'Faculty borrowing requests will appear here when submitted.', false) }}
+</div>
+
+<script>
+(function(){
+  const buttons = Array.from(document.querySelectorAll('[data-course-filter]'));
+  const rows = Array.from(document.querySelectorAll('[data-student-course]'));
+  const empty = document.getElementById('courseFilterEmpty');
+  if (!buttons.length) return;
+
+  function selectCourse(course) {
+    let visible = 0;
+    rows.forEach(function(row){
+      const show = row.getAttribute('data-student-course') === course;
+      row.classList.toggle('course-hidden', !show);
+      if (show) visible += 1;
+    });
+    buttons.forEach(function(btn){
+      const active = btn.getAttribute('data-course-filter') === course;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){ selectCourse(btn.getAttribute('data-course-filter')); });
+  });
+  const selected = buttons.find(function(btn){ return btn.classList.contains('active'); }) || buttons[0];
+  selectCourse(selected.getAttribute('data-course-filter'));
+})();
+</script>
+{% endif %}
+{% endblock %}

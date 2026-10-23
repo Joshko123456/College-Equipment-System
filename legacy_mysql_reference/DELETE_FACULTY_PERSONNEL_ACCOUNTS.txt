@@ -1,0 +1,13 @@
+ADMIN DELETE UPDATE
+
+People & Accounts now supports Delete for:
+- Student Directory (existing behavior)
+- Faculty Directory
+- Personnel Directory (Staff and other Administrator accounts)
+
+Safety behavior:
+- Accounts with no operational history are permanently deleted.
+- Accounts referenced by borrowing, approval, damage, assessment, or payment records are deactivated/archived so historical reports remain intact.
+- The currently signed-in administrator cannot delete their own account.
+- The last active administrator cannot be deleted.
+- Archived/deactivated accounts disappear from the active Faculty/Personnel directories and can no longer sign in.

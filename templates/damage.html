@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block heading %}Condition Report & Responsibility{% endblock %}
+{% block content %}
+<div class="panel damage-panel">
+<h2>{{loan.name}} · Request #{{loan.id}}</h2><p><b>Model:</b> {{loan.model}}</p>
+<p>Borrower: <b>{{loan.full_name}}</b> · Serials: {{loan.unit_serials|join(', ') or 'Not recorded in legacy transaction'}}</p>
+<p>Fair or damaged returns require a responsibility record. Admin or staff enter the total assessed condition cost; Good returns show an inspection note and PHP 0.00, with no damage responsibility acknowledgment.</p>
+{% if not is_borrower and request.args.get('notice') %}<p role="status">{{request.args.get('notice')}}</p>{% endif %}
+{% if loan.status=='Returned' and loan.return_condition=='Good' %}
+<h3>Good Condition</h3><p>{{loan.remarks or 'Equipment returned in good condition. No damage recorded during inspection.'}}</p><p class="damage-amount">PHP 0.00</p><p>No charge and no responsibility acknowledgment required.</p>
+{% elif not damage %}
+<h3>Report Condition Issue</h3>
+<form method="post" class="damage-form">
+<input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="action" value="report">
+<label>Condition / damage details and affected serial number(s)</label><textarea name="description" maxlength="4000" rows="5" minlength="20" required placeholder="Identify the serial number, explain when and how the issue happened, describe your actions or mistake, and state what damage you observed. Do not guess if the cause is unknown."></textarea>
+{% if is_borrower %}<label class="damage-check"><input type="checkbox" name="responsibility" value="yes" required> I confirm my explanation is accurate, acknowledge responsibility for the damage or condition issue I caused, and agree to settle the repair or replacement cost assessed by the college. I will review and accept the exact amount separately.</label>{% endif %}
+<button>Submit Condition Report</button></form>
+{% else %}
+<h3>Condition Details</h3><p class="damage-description">{{damage.description}}</p><small>Reported: {{damage.reported_at}}</small>
+<p><b>Responsibility:</b> {{'Acknowledged on ' ~ damage.responsibility_ack_at if damage.responsibility_ack_at else 'Awaiting borrower acknowledgment'}}</p>
+<h3>Student / Faculty Explanation</h3>
+{% if damage.borrower_explanation %}<p class="damage-description">{{damage.borrower_explanation}}</p><small>Submitted: {{damage.explanation_at}}</small>
+{% elif is_borrower %}<form method="post" class="damage-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="action" value="explain"><label>Explain what happened and your responsibility</label><textarea name="borrower_explanation" minlength="20" maxlength="4000" rows="5" required placeholder="Identify the affected serial number. What happened? When? What actions or mistake caused the issue? What damage did you observe? State unknown details honestly."></textarea><label class="damage-check"><input type="checkbox" name="responsibility" value="yes" required> I confirm this explanation is accurate, acknowledge responsibility for the damage or condition issue I caused, and agree to settle the assessed repair or replacement cost. I will review the exact amount below.</label><button>Submit Explanation & Responsibility</button></form>
+{% else %}<p>Awaiting the borrower's explanation of what happened and their responsibility.</p>{% endif %}
+<h3>Condition Cost</h3>
+{% if damage.amount is not none %}
+<p class="damage-amount">PHP {{'{:,.2f}'.format(damage.amount)}}</p><p class="damage-description">{{damage.assessment_notes}}</p><small>Assessed: {{damage.assessed_at}} · Revision {{damage.assessment_version}}</small>
+<p><b>Cost acknowledgment:</b> {{damage.cost_ack_at or 'Awaiting borrower acknowledgment'}}</p>
+<p><b>Payment status:</b> {{'No charge' if damage.amount==0 else ('Paid' if damage.paid_at else 'Unpaid')}}</p>
+{% if damage.paid_at %}<p>Paid: {{damage.paid_at}} · Receipt / reference: {{damage.payment_reference}}</p>{% endif %}
+{% if is_borrower and not damage.cost_ack_at and damage.borrower_explanation and damage.responsibility_ack_at %}<form method="post" class="damage-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="action" value="ack_cost"><input type="hidden" name="version" value="{{damage.assessment_version}}"><label class="damage-check"><input type="checkbox" name="accept_cost" value="yes" required> I accept responsibility for paying the assessed repair or replacement cost of PHP {{'{:,.2f}'.format(damage.amount)}}{% if damage.amount>0 and not damage.paid_at %} and agree to settle it with the college{% endif %}.</label><button>Accept Assessed Cost</button></form>{% endif %}
+{% else %}<p>Awaiting an applicable Fair/Damaged return inspection or staff assessment. Good returns do not create a charge.</p>{% endif %}
+{% if not is_borrower and not damage.paid_at %}
+<details open><summary>Enter / Edit Damage Cost</summary><form method="post" class="damage-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="action" value="assess"><label>Assessed cost (PHP)</label><input type="number" name="amount" step="0.01" min="0" max="99999999.99" value="{{damage.amount if damage.amount is not none else ''}}" required><label>Inspection findings / cost explanation</label><textarea name="assessment_notes" maxlength="4000" rows="4" required>{{damage.assessment_notes or ''}}</textarea><small>Type the total amount for this borrowing. Changes require a fresh borrower cost acknowledgment.</small><button>Save Assessment & Notify Borrower</button></form></details>
+{% if damage.amount is not none and damage.amount>0 %}<details><summary>Record Full Payment</summary><form method="post" class="damage-form"><input type="hidden" name="_csrf" value="{{csrf_token}}"><input type="hidden" name="action" value="paid"><input type="hidden" name="version" value="{{damage.assessment_version}}"><label>Receipt / payment reference</label><input name="payment_reference" maxlength="120" required><small>Record only after the college receives the full PHP {{'{:,.2f}'.format(damage.amount)}}. This does not process an online payment.</small><button>Mark Fully Paid</button></form></details>{% endif %}
+{% endif %}
+{% endif %}
+<p>Questions about the recorded Fair/Damaged condition or amount? Contact admin/staff before accepting the assessment.</p>
+<a class="text-link" href="{% if is_borrower %}{{url_for('student_requests',scope=student_scope)}}{% else %}{{url_for('requests_page')}}{% endif %}">← Back to Borrow & Return</a>
+</div>
+{% endblock %}

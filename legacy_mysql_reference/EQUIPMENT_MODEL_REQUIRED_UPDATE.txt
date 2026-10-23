@@ -1,0 +1,22 @@
+EQUIPMENT MODEL REQUIRED UPDATE
+===============================
+
+What changed
+- Every equipment type now has a required Model field.
+- Admin/Staff cannot add equipment without entering the actual model.
+- Admin/Staff cannot save an edited equipment record without a valid model.
+- The model appears in the equipment catalog for Student, Faculty, Admin and Staff.
+- The model is also shown in borrowing transactions, reports, notification transaction details and condition reports.
+- Search now includes the model because the equipment card text is searchable.
+
+Existing databases
+- On startup, the app safely adds equipment.model if it is missing.
+- Existing records with no model receive "Update required" so data is preserved.
+- When Admin/Staff edits one of those legacy records, the edit form leaves Model blank and requires the real model before it can be saved.
+
+Examples
+- DSLR Camera -> Canon EOS 1500D
+- Laptop -> Lenovo ThinkPad E14
+- LCD Projector -> Epson EB-X06
+
+Serial numbers remain separate: Model identifies the equipment type/version; each physical unit still keeps its own unique serial number.

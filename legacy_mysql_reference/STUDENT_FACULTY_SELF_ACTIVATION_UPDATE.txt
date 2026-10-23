@@ -1,0 +1,25 @@
+STUDENT / FACULTY SELF-ACTIVATION UPDATE
+========================================
+
+1. Add Student Record > Course is now a required dropdown:
+   CCJS, CITE, COTE, COHM, COTM
+
+2. Add Faculty Record > Department / Office is now a required dropdown:
+   CCJS, CITE, COHM, COTM
+
+3. Faculty password privacy:
+   - Admin no longer creates, enters, or sees a Faculty password.
+   - A new Faculty record starts as Waiting activation.
+   - Faculty opens Student & Faculty Portal > Activate Account.
+   - Faculty enters the registered Faculty ID and creates a private password.
+   - The required borrower agreement popup must be accepted before activation.
+   - After successful activation, the Faculty Directory status becomes Activated.
+
+4. Archived Faculty safety:
+   - Only records specifically marked Waiting activation may self-activate.
+   - A Faculty account archived by Admin because it has transaction history cannot reactivate itself.
+
+5. Existing installations:
+   - app.py safely adds users.activation_required if missing.
+   - users.password_hash is made nullable so a pending Faculty record can exist without a password.
+   - Existing active Faculty accounts are not reset or deleted.

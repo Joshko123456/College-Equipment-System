@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#075b35" id="themeColor">
+  <script>
+    (function(){
+      try {
+        var saved = localStorage.getItem('bcc-theme');
+        document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+      } catch(e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <title>{% block title %}BCC Equipment Services{% endblock %}</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}?v=responsive_mobile14">
+<link rel="stylesheet" href="{{url_for('static',filename='css/phone-design.css')}}?v=phone1">
+</head>
+<body{% if current_user %} data-user-id="{{current_user.id}}" data-user-role="{{current_user.role}}" data-notification-feed="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notifications_api',scope=student_scope)}}{% else %}{{url_for('notifications_api')}}{% endif %}" data-notification-page="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notifications',scope=student_scope)}}{% else %}{{url_for('notifications')}}{% endif %}"{% endif %}>
+{% if current_user %}
+{% include 'mobile_shell.html' %}
+<button class="home-menu-launcher" id="homeMenuLauncher" type="button" aria-label="Open main menu" aria-expanded="false" onclick="toggleSidebar()" title="Open main menu"><span>⌂</span></button>
+<div class="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-logo"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC mark"></div>
+    <div class="brand-copy"><b>BCC</b><span>Equipment Services</span><small>College Management Portal</small></div>
+  </div>
+  <div class="phone-account"><button type="button" class="phone-close" onclick="toggleSidebar(false)" aria-label="Close profile and menu">×</button><b>{{current_user.name}}</b><small>{{current_user.role|capitalize}} · {{current_user.school_id}}</small><div><button type="button" class="theme-toggle" onclick="toggleTheme()"><span class="theme-icon">☾</span><span class="theme-label">Dark mode</span></button></div></div><div class="side-label">MAIN MENU</div>
+  <nav>
+    {% if current_user.role in ['student','faculty'] %}
+      <a class="{{'active' if request.endpoint=='student_dashboard' else ''}}" href="{{url_for('student_dashboard',scope=student_scope)}}"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
+      <a class="{{'active' if request.endpoint=='student_equipment' else ''}}" href="{{url_for('student_equipment',scope=student_scope)}}"><span class="nav-icon">▣</span><span>Equipment</span></a>
+      <a class="{{'active' if request.endpoint=='student_requests' else ''}}" href="{{url_for('student_requests',scope=student_scope)}}"><span class="nav-icon">⇄</span><span>Borrow & Return</span></a>
+      <a class="{{'active' if request.endpoint=='student_notifications' else ''}}" href="{{url_for('student_notifications',scope=student_scope)}}"><span class="nav-icon">●</span><span>Notifications</span><b class="nav-notification-badge" data-notification-badge{% if not notification_unread_count %} hidden{% endif %}>{{notification_unread_count}}</b></a>
+    {% else %}
+      <a class="{{'active' if request.endpoint=='admin_dashboard' else ''}}" href="{{url_for('admin_dashboard')}}"><span class="nav-icon">⌂</span><span>Dashboard</span></a>
+      <a class="{{'active' if request.endpoint=='equipment' else ''}}" href="{{url_for('equipment')}}"><span class="nav-icon">▣</span><span>Equipment</span></a>
+      <a class="{{'active' if request.endpoint=='requests_page' else ''}}" href="{{url_for('requests_page')}}"><span class="nav-icon">⇄</span><span>Borrow & Return</span></a>
+      {% if current_user.role=='admin' %}<a class="{{'active' if request.endpoint=='users' else ''}}" href="{{url_for('users')}}"><span class="nav-icon">♟</span><span>People & Accounts</span></a>{% endif %}
+      <a class="{{'active' if request.endpoint=='reports' else ''}}" href="{{url_for('reports')}}"><span class="nav-icon">▤</span><span>Reports</span></a>
+      <a class="{{'active' if request.endpoint=='notifications' else ''}}" href="{{url_for('notifications')}}"><span class="nav-icon">●</span><span>Notifications</span><b class="nav-notification-badge" data-notification-badge{% if not notification_unread_count %} hidden{% endif %}>{{notification_unread_count}}</b></a>
+    {% endif %}
+  </nav>
+  <div class="side-campus-card">
+    <span class="campus-icon">✦</span>
+    <div><b>College Property</b><small>Handle all borrowed equipment responsibly.</small></div>
+  </div>
+  <div class="sidefoot">
+    <div class="avatar">{{current_user.name[0]|upper}}</div>
+    <div class="user-meta"><small>Signed in as</small><b>{{current_user.name}}</b><span>{{current_user.role|upper}}</span></div>
+    {% if current_user.role in ['student','faculty'] %}<a class="logout" href="{{url_for('student_logout',scope=student_scope)}}" title="Sign out">↪</a>{% else %}<a class="logout" href="{{url_for('admin_logout')}}" title="Sign out">↪</a>{% endif %}
+  </div>
+</aside>
+<main>
+  <header class="topbar">
+    <div class="topbar-copy"><span class="eyebrow">COLLEGE EQUIPMENT BORROWING & RETURN</span><h2>{% block heading %}BCC Equipment Services{% endblock %}</h2><p>{% if current_user.role in ['student','faculty'] %}Student & faculty self-service portal{% else %}Administration and equipment operations portal{% endif %}</p></div>
+    <div class="topbar-actions">
+      <a class="notification-bell" href="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notifications',scope=student_scope)}}{% else %}{{url_for('notifications')}}{% endif %}" title="Notifications" aria-label="Open notifications"><span>🔔</span><b data-notification-badge{% if not notification_unread_count %} hidden{% endif %}>{{notification_unread_count}}</b></a>
+      <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Switch color theme" title="Switch color theme"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button><span class="role-chip"><i></i>{{current_user.role|capitalize}}</span><div class="top-avatar">{{current_user.name[0]|upper}}</div></div>
+  </header>
+  <section class="content">
+    {% if current_user.role in ['student','faculty'] %}
+      {% if request.args.get('notice') %}<div class="alert {{request.args.get('kind','success')}}"><span>{{'✓' if request.args.get('kind','success')=='success' else '!'}}</span><div>{{request.args.get('notice')}}</div></div>{% endif %}
+    {% else %}
+      {% with msgs=get_flashed_messages(with_categories=true) %}{% for c,m in msgs %}<div class="alert {{c}}"><span>{{'✓' if c=='success' else '!'}}</span><div>{{m}}</div></div>{% endfor %}{% endwith %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </section>
+  <footer class="app-footer"><span>College Equipment Borrowing & Return Management System</span><span>BCC Equipment Services</span></footer>
+  <div class="notification-toast-stack" id="notificationToastStack" aria-live="polite"></div>
+</main>
+{% else %}
+<button class="theme-toggle guest-theme-toggle" type="button" onclick="toggleTheme()" aria-label="Switch color theme" title="Switch color theme"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark mode</span></button>
+{% block guest %}{% endblock %}
+{% endif %}
+<script src="{{url_for('static',filename='js/app.js')}}?v=responsive_mobile16"></script>
+</body></html>

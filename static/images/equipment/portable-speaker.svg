@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Portable Speaker">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#edf7f1"/><stop offset="1" stop-color="#d8eadf"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#183d2c"/><stop offset="1" stop-color="#08281c"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4c95d"/><stop offset="1" stop-color="#c99218"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#123325" flood-opacity=".18"/></filter>
+</defs>
+<rect width="640" height="420" rx="34" fill="url(#bg)"/>
+<circle cx="534" cy="72" r="86" fill="#fff" opacity=".35"/><circle cx="90" cy="358" r="110" fill="#fff" opacity=".22"/>
+
+<g filter="url(#shadow)"><rect x="210" y="65" width="220" height="300" rx="34" fill="url(#dark)"/><rect x="259" y="80" width="122" height="18" rx="9" fill="#638372"/><circle cx="320" cy="178" r="61" fill="#0b2017" stroke="#446d59" stroke-width="8"/><circle cx="320" cy="178" r="35" fill="#183d2c"/><circle cx="320" cy="178" r="11" fill="url(#gold)"/>
+<circle cx="320" cy="292" r="42" fill="#0b2017" stroke="#446d59" stroke-width="7"/><circle cx="320" cy="292" r="18" fill="#264f3b"/><circle cx="250" cy="112" r="5" fill="#25ad6d"/><circle cx="270" cy="112" r="5" fill="#f0c650"/></g>
+</svg>

@@ -1,0 +1,17 @@
+DASHBOARD IMAGE UPDATE - ALL USERS
+
+Added matching visual images to the four dashboard statistic cards.
+Applied through the shared dashboard template, so the update appears for:
+- Student
+- Faculty
+- Administrator
+- Staff
+
+Images added:
+- Total Equipment: camera/computer equipment image
+- Available Units: open inventory box with check image
+- Pending Requests: request document with hourglass image
+- Overdue Items: clock with warning image
+
+The original dashboard totals and role-specific labels/links are unchanged.
+The images support both light and dark mode and resize on mobile screens.

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Administration Login | BCC Equipment Services{% endblock %}
+{% block guest %}
+<div class="auth-page admin-auth">
+  <div class="auth-shell auth-shell-admin">
+    <section class="auth-brand">
+      <div class="auth-brand-inner">
+        <img class="auth-logo" src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC college mark">
+        <span class="auth-kicker">BCC • ADMINISTRATION</span>
+        <h1>Equipment Services<br>Administration</h1>
+        <p>Manage college assets, student borrowing requests, releases, returns, overdue items, and operational reports.</p>
+        <div class="auth-features"><span>✓ Inventory control</span><span>✓ Request approval</span><span>✓ Reports & monitoring</span></div>
+      </div>
+      <div class="auth-watermark">ADMIN</div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-panel-inner">
+        <div class="mini-brand"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt=""><div><b>BCC</b><small>Equipment Services</small></div></div>
+        <span class="portal-pill gold-pill">Personnel Portal</span>
+        <h2>Administration Sign In</h2>
+        <p class="auth-subtitle">Authorized administrators and equipment staff only.</p>
+        {% if request.args.get('notice') %}<div class="alert {{request.args.get('kind','success')}}"><span>✓</span><div>{{request.args.get('notice')}}</div></div>{% endif %}
+        {% if admin_error %}<div class="alert danger"><span>!</span><div>{{admin_error}}</div></div>{% endif %}
+        {% if any_admin_count == 0 %}
+        <div class="alert danger"><span>!</span><div>No administrator record exists. <a href="{{ url_for('setup') }}"><b>Create the first administrator</b></a>.</div></div>
+        {% elif active_admin_count == 0 %}
+        <div class="alert danger"><span>!</span><div>An administrator record exists but is inactive. <a href="{{ url_for('admin_recover') }}"><b>Recover the existing administrator</b></a>.</div></div>
+        {% endif %}
+        <form method="post" class="auth-form">
+          <label>Administrator / Staff ID</label>
+          <div class="input-shell"><span>♟</span><input name="school_id" required autocomplete="username" placeholder="Enter personnel ID"></div>
+          <label>Password</label>
+          <div class="input-shell"><span>◆</span><input id="adminPassword" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password"><button type="button" class="peek" onclick="togglePassword('adminPassword',this)">Show</button></div>
+          <button class="primary-btn auth-submit">Sign In to Administration <b>→</b></button>
+        </form>
+        <div class="security-strip"><span>◆</span><div><b>Restricted Access</b><small>Personnel activity is intended for authorized college operations.</small></div></div>
+        <div class="auth-note">Do not share administrator or staff credentials.</div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

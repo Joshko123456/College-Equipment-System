@@ -1,0 +1,7 @@
+STUDENT / FACULTY WELCOME SCREEN
+
+Open the system or /student/login to see the welcome screen. Continue to Login opens the existing combined Student / Faculty form. Login errors, expired-session messages and account activation notices remain visible on the login form.
+
+College logos now use contained proportions with padding and circular backgrounds. The sidebar logo is clipped to its frame.
+
+Replace application files, keep your existing database/configuration, and restart app.py. Refresh your browser with Ctrl+F5 to load the updated styles.

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Activate Student / Faculty Account | BCC Equipment Services{% endblock %}
+{% block guest %}
+<div class="auth-page student-auth account-create-page">
+  <div class="activation-shell account-create-shell">
+    <div class="activation-header modern-activation-header">
+      <div class="activation-brand-lockup"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC logo"><div><span>BUENAVISTA COMMUNITY COLLEGE</span><h1>Activate your personal account</h1><p>Students and faculty activate Equipment Services access using their official registered ID.</p></div></div>
+      <span class="secure-pill">◆ Secure activation</span>
+    </div>
+    {% if student_error %}<div class="alert danger"><span>!</span><div>{{student_error}}</div></div>{% endif %}
+    <div class="activation-grid modern-activation-grid">
+      <aside class="steps-card modern-steps-card">
+        <span class="setup-kicker">STUDENT & FACULTY SELF-SERVICE</span>
+        <h2>Your account, your password.</h2>
+        <p>The administrator creates only your official Student or Faculty record. You personally create the password used to access the borrowing portal.</p>
+        <div class="step"><b>1</b><div><strong>Borrower record exists</strong><span>Your Student or Faculty ID must already be listed by the administrator.</span></div></div>
+        <div class="step"><b>2</b><div><strong>Verify your registered ID</strong><span>The system matches your Student or Faculty ID with the official registry.</span></div></div>
+        <div class="step"><b>3</b><div><strong>Create your private password</strong><span>Use at least 6 characters and keep it confidential.</span></div></div>
+        <div class="privacy-card"><span>✓</span><div><b>Personal password</b><small>Your password is stored securely and is not displayed to administrators.</small></div></div>
+      </aside>
+      <form id="studentActivationForm" method="post" class="activation-form modern-account-form" oninput="updatePasswordStrength('newPassword','passwordStrength')" onsubmit="return activationSubmitGuard(event, 'studentActivationForm')">
+        <div class="form-topline"><span>ACCOUNT ACTIVATION</span><b>Step 1 of 1</b></div>
+        <label>Student / Faculty ID</label><div class="input-shell modern-input-shell"><span>▦</span><input name="school_id" required autocomplete="username" placeholder="Enter your Student / Faculty ID"></div><small class="field-help">Enter the exact Student or Faculty ID recorded by the administrator.</small>
+        <label>Create Password</label><div class="input-shell modern-input-shell"><span>◆</span><input id="newPassword" type="password" name="password" minlength="6" required autocomplete="new-password" placeholder="Minimum 6 characters"><button type="button" class="peek" onclick="togglePassword('newPassword',this)">Show</button></div>
+        <div class="password-meter" id="passwordStrength"><i></i><span>Use 6 or more characters</span></div>
+        <label>Confirm Password</label><div class="input-shell modern-input-shell"><span>◆</span><input id="confirmPassword" type="password" name="confirm_password" minlength="6" required autocomplete="new-password" placeholder="Re-enter your password"><button type="button" class="peek" onclick="togglePassword('confirmPassword',this)">Show</button></div>
+        <input type="hidden" name="_activation_csrf" value="{{session.activation_csrf}}">
+        <input type="hidden" name="accept_terms" id="activationTermsAccepted" value="">
+        <button type="button" class="primary-btn auth-submit modern-submit" onclick="openActivationAgreement('studentActivationForm')">Create & Activate My Account <b>→</b></button>
+        <div class="form-security-note"><span>◆</span><p>Use a password you do not use for other school or personal accounts.</p></div>
+        <a class="back-link modern-back-link" href="{{url_for('student_login')}}">← Back to Student & Faculty Sign In</a>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal activation-agreement-modal" id="activationAgreementModal" role="dialog" aria-modal="true" aria-labelledby="activationAgreementTitle">
+    <div class="modalbox agreement-modalbox">
+      <button class="x" type="button" onclick="cancelActivationAgreement()" aria-label="Close agreement">×</button>
+      <div class="agreement-modal-heading">
+        <div class="agreement-shield">✓</div>
+        <div>
+          <span class="panel-kicker">REQUIRED BEFORE ACTIVATION</span>
+          <h2 id="activationAgreementTitle">Student / Faculty Borrower Agreement</h2>
+          <p>Please review the responsibilities below before your account can be activated.</p>
+        </div>
+      </div>
+      <div class="agreement-scroll">
+        {% include 'borrower_terms_list.html' %}
+      </div>
+      <label class="agreement-confirm-row">
+        <input id="activationAgreementCheck" type="checkbox" onchange="syncActivationAgreementButton()">
+        <span><b>I have read and agree to these terms.</b><small>I understand the equipment care, return, damage responsibility, and assessed-cost rules.</small></span>
+      </label>
+      <div class="agreement-modal-actions">
+        <button type="button" class="cancel-btn" onclick="cancelActivationAgreement()">Cancel</button>
+        <button type="button" id="activationAgreementConfirm" disabled onclick="confirmActivationAgreement()">Agree & Activate Account <b>→</b></button>
+      </div>
+      <p class="agreement-lock-note">◆ Your account will not be activated unless you accept this agreement.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+AGREEMENT POPUP UPDATE
+
+Student activation flow:
+1. Student enters Student ID and creates password.
+2. Student clicks "Create & Activate My Account".
+3. Required Student / Faculty Borrower Agreement opens as a popup.
+4. Account cannot be submitted until the checkbox is accepted.
+5. Student clicks "Agree & Activate Account" to complete activation.
+
+Faculty flow:
+- Faculty accounts already created by Admin continue to use the shared Student & Faculty login.
+- On first login / whenever the current terms version is not yet accepted, the same agreement is shown as a required popup before portal access.
+
+Backend validation for accept_terms remains enabled.

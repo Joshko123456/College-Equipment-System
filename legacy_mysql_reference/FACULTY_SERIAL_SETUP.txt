@@ -1,0 +1,29 @@
+FACULTY ACCOUNTS AND EQUIPMENT SERIAL NUMBERS
+
+Existing installation:
+1. Back up your college_equipment database in phpMyAdmin.
+2. Stop Python, replace the application files with this updated folder, and
+   retain your existing database settings and .secret_key.
+3. Start MySQL in XAMPP, open this folder in a terminal, and run:
+   py -m pip install -r requirements.txt
+   py app.py
+4. Open http://127.0.0.1:5000/student/login for the shared borrower login.
+   Admin/staff sign in at http://127.0.0.1:5000/admin/login.
+
+The app automatically adds missing Faculty roles and the serial number column.
+Do not delete the existing database or re-import schema.sql for an update.
+schema.sql is intended for a NEW installation only.
+
+Create a faculty account:
+Admin > home menu > People & Accounts > Create Faculty Account.
+Enter faculty/employee ID, name and password, then save.
+Faculty are listed in their own Faculty Directory, separate from admin/staff.
+Faculty sign in on the SAME page as students; the saved account determines role.
+Students continue activating their official student records as before.
+Faculty can browse, request, track, submit returns and receive notifications.
+Faculty cannot access admin/staff operations or another borrower's records.
+
+Serial numbers:
+See INDIVIDUAL_SERIAL_NUMBERS.txt for per-physical-unit tracking and migration.
+
+The home menu, equipment images and existing return/notification workflow remain.

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="Digital Multimeter">
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8f2df"/><stop offset="1" stop-color="#e9dfbe"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#183d2c"/><stop offset="1" stop-color="#08281c"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4c95d"/><stop offset="1" stop-color="#c99218"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#123325" flood-opacity=".18"/></filter>
+</defs>
+<rect width="640" height="420" rx="34" fill="url(#bg)"/>
+<circle cx="534" cy="72" r="86" fill="#fff" opacity=".35"/><circle cx="90" cy="358" r="110" fill="#fff" opacity=".22"/>
+
+<g filter="url(#shadow)"><path d="M214 72h212c22 0 40 18 40 40v231c0 22-18 40-40 40H214c-22 0-40-18-40-40V112c0-22 18-40 40-40z" fill="#e6b33d"/>
+<rect x="208" y="102" width="224" height="76" rx="12" fill="#1d3d2e"/><rect x="224" y="116" width="192" height="48" rx="5" fill="#b9d6c6"/><text x="320" y="151" text-anchor="middle" font-family="monospace" font-size="36" font-weight="700" fill="#203c2f">12.48</text>
+<circle cx="320" cy="262" r="64" fill="#183d2c"/><circle cx="320" cy="262" r="48" fill="#eef5f1"/><path d="M320 262l36-31" stroke="#b16f10" stroke-width="10" stroke-linecap="round"/><circle cx="320" cy="262" r="9" fill="#173b2b"/>
+<circle cx="270" cy="342" r="12" fill="#1e2b25"/><circle cx="320" cy="342" r="12" fill="#1e2b25"/><circle cx="370" cy="342" r="12" fill="#b82828"/></g>
+<path d="M270 354c-34 24-57 10-76 42" fill="none" stroke="#1f2925" stroke-width="7"/><path d="M370 354c34 24 57 10 76 42" fill="none" stroke="#b82828" stroke-width="7"/>
+</svg>

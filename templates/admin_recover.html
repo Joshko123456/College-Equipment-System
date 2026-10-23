@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Recover Administrator | BCC Equipment Services{% endblock %}
+{% block guest %}
+<div class="auth-page admin-auth"><div class="activation-shell">
+  <div class="activation-header"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC mark"><div><span>BCC EQUIPMENT SERVICES</span><h1>Recover Existing Administrator</h1><p>This page reactivates an existing administrator record. It does not delete or replace student, equipment, or transaction records.</p></div></div>
+  {% if recover_error %}<div class="alert danger"><span>!</span><div>{{recover_error}}</div></div>{% endif %}
+  <div class="activation-grid">
+    <div class="steps-card"><h3>Safe Recovery</h3><div class="step"><b>1</b><div><strong>Use the previous Admin ID</strong><span>Enter the same personnel ID saved in the database.</span></div></div><div class="step"><b>2</b><div><strong>Confirm the record</strong><span>Full name and email must match the saved administrator.</span></div></div><div class="step"><b>3</b><div><strong>Create a new password</strong><span>The existing admin row is reactivated instead of creating a duplicate.</span></div></div></div>
+    <form method="post" class="activation-form">
+      <label>Previous Administrator ID</label><input name="school_id" required placeholder="Existing Admin ID">
+      <label>Full Name</label><input name="full_name" required placeholder="Must match existing record">
+      <label>Email</label><input type="email" name="email" placeholder="Must match if an email is saved">
+      <label>New Password</label><div class="input-shell"><span>◆</span><input id="recoverPassword" type="password" name="password" minlength="6" required placeholder="Minimum 6 characters"><button type="button" class="peek" onclick="togglePassword('recoverPassword',this)">Show</button></div>
+      <button class="primary-btn auth-submit">Recover Administrator <b>→</b></button>
+      <a class="back-link" href="{{url_for('admin_login')}}">← Back to Administration Sign In</a>
+    </form>
+  </div>
+</div></div>
+{% endblock %}

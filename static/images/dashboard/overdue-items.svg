@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Overdue items">
+  <defs><linearGradient id="o" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff9a4f"/><stop offset="1" stop-color="#e6502f"/></linearGradient></defs>
+  <circle cx="29" cy="30" r="21" fill="none" stroke="url(#o)" stroke-width="6"/>
+  <path d="M29 17v14l10 6" fill="none" stroke="#ff8a43" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M45 36l14 24H31z" fill="#f4a62a" stroke="#ffe4a6" stroke-width="1.5"/>
+  <path d="M45 43v7" stroke="#713600" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="45" cy="54" r="1.8" fill="#713600"/>
+</svg>

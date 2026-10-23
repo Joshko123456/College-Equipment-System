@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="BCC placeholder college mark">
+  <circle cx="100" cy="100" r="94" fill="#ffffff" stroke="#e1b341" stroke-width="7"/>
+  <circle cx="100" cy="100" r="78" fill="#075b35"/>
+  <circle cx="100" cy="100" r="67" fill="none" stroke="#ffffff" stroke-width="2" opacity=".55"/>
+  <path d="M55 73h90v9H55zM66 89h68l-8 45H74z" fill="#e1b341" opacity=".95"/>
+  <path d="M73 96h54v7H73zm4 13h46v7H77zm4 13h38v7H81z" fill="#075b35"/>
+  <text x="100" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" font-weight="800" fill="#ffffff">BCC</text>
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#ffffff">COLLEGE</text>
+</svg>

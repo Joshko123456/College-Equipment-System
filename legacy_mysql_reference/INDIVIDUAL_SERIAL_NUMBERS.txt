@@ -1,0 +1,43 @@
+AUTOMATIC SERIAL NUMBERS FOR EVERY PHYSICAL ITEM
+
+Add Equipment: enter the equipment details and quantity, then Save.
+The system automatically creates one unique serial number for each item.
+For example, 3 DSLR cameras receive three separate identifiers such as:
+  EQ0006-U000048
+  EQ0006-U000049
+  EQ0006-U000050
+Numbers depend on the database IDs. No manual serial-number entry is needed.
+These are internal tracking serials, not manufacturer-issued serial numbers.
+Attach a matching label to each physical item so staff can identify it at release.
+
+Existing units marked Needs serial number receive unique serials automatically
+when this version starts. Existing confirmed serials are preserved. Restarting
+or editing the equipment name does not change previously generated serials.
+Past loan serial snapshots are preserved. Legacy loans without known serials
+remain labelled as legacy history rather than inventing historical assignments.
+
+ADDING MORE ITEMS
+Equipment > Edit > Add More Units: enter the number of ADDITIONAL items.
+Each new item receives its own serial. Enter 0 to keep the existing units.
+Total and available quantities are calculated from the physical-unit records.
+Equipment > View serial numbers displays each unit and its status.
+
+BORROWING AND RETURNS
+Admin/staff click Release. The system automatically assigns the requested number
+of available serial-numbered units. There is no physical-unit selector.
+Issue the items matching the serials displayed in the released transaction.
+Borrowers see issued serials in their transaction history. Returns update those
+specific units. Damaged/For Repair units cannot be released until their condition
+is updated to Good or Fair. Students and faculty retain the shared login page.
+
+UPDATE STEPS
+1. Back up your college_equipment database in phpMyAdmin.
+2. Stop Python and replace the application files with this updated folder.
+   Preserve your database settings and existing .secret_key.
+3. Start MySQL, then run py app.py from the extracted application folder.
+4. Open Equipment > View serial numbers to see the automatically assigned values.
+Do NOT delete the database or re-import schema.sql into an existing database.
+For a new installation, import schema.sql and run the application normally.
+
+Serial numbers are display-only. There are no admin/staff serial entry fields.
+Updating a unit condition never changes its serial number.

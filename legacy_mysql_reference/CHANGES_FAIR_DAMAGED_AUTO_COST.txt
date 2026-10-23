@@ -1,0 +1,12 @@
+UPDATE: FAIR & DAMAGED AUTOMATIC RESPONSIBILITY COSTS
+
+1. Good returns are NOT included in responsibility/cost handling.
+2. Fair returns automatically create a condition note and cost.
+3. Damaged returns automatically create a condition note and cost.
+4. Cost = configured per-unit condition cost x borrowed quantity.
+5. Admin/Staff can configure Fair Return Cost and Damaged Return Cost per equipment.
+6. Defaults for existing/new equipment are Fair PHP 250.00 and Damaged PHP 1,000.00 until edited.
+7. Borrowers are notified and can acknowledge responsibility and the displayed cost.
+8. Admin/Staff can revise the automatic cost if needed and record full offline payment.
+9. Good returns do not show the Condition Report / Cost link after completion.
+10. Existing databases are migrated automatically on app startup; no re-import is required.

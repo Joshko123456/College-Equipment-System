@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Borrower Agreement | BCC Equipment Services{% endblock %}
+{% block heading %}Borrower Agreement{% endblock %}
+{% block content %}
+<div class="terms-gate-page">
+  <div class="terms-gate-card">
+    <span class="panel-kicker">ACCESS REQUIRES AGREEMENT</span>
+    <h2>One final step before entering your account.</h2>
+    <p>Students and faculty must accept the borrower agreement before accessing equipment borrowing features.</p>
+  </div>
+</div>
+<div class="modal show activation-agreement-modal terms-required-modal modal-lock" id="requiredBorrowerTermsModal" role="dialog" aria-modal="true" aria-labelledby="requiredTermsTitle">
+  <div class="modalbox agreement-modalbox">
+    <div class="agreement-modal-heading">
+      <div class="agreement-shield">✓</div>
+      <div>
+        <span class="panel-kicker">REQUIRED BEFORE PORTAL ACCESS</span>
+        <h2 id="requiredTermsTitle">Student / Faculty Borrower Agreement</h2>
+        <p>Review and accept the terms before continuing to your borrowing account.</p>
+      </div>
+    </div>
+    {% if terms_error %}<div class="alert danger"><span>!</span><div>{{terms_error}}</div></div>{% endif %}
+    <form method="post">
+      <input type="hidden" name="_csrf" value="{{csrf_token}}">
+      <div class="agreement-scroll">
+        {% include 'borrower_terms_list.html' %}
+      </div>
+      <label class="agreement-confirm-row">
+        <input id="requiredTermsCheck" type="checkbox" name="accept_terms" value="yes" required onchange="document.getElementById('requiredTermsConfirm').disabled=!this.checked">
+        <span><b>I have read and agree to these terms.</b><small>I understand the equipment care, return, damage responsibility, and assessed-cost rules.</small></span>
+      </label>
+      <div class="agreement-modal-actions">
+        <a class="cancel-btn agreement-signout" href="{{url_for('student_logout',scope=student_scope)}}">Sign Out</a>
+        <button id="requiredTermsConfirm" type="submit" disabled>Agree & Continue <b>→</b></button>
+      </div>
+      <p class="agreement-lock-note">◆ Portal access remains locked until the agreement is accepted.</p>
+    </form>
+  </div>
+</div>
+<script>document.body.classList.add('modal-open');</script>
+{% endblock %}

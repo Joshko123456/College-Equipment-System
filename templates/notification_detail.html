@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block heading %}Notification Details{% endblock %}
+{% block content %}
+<div class="panel notification-panel">
+  <div class="panel-title"><div><span class="panel-kicker">ACCOUNT UPDATE</span><h3>Notification #{{notification.id}}</h3></div><span>{{notification.created_at}}</span></div>
+  <p class="notification-full-message">{{notification.message}}</p>
+  {% if transaction %}
+  <h3>Related borrowing transaction #{{transaction.id}}</h3>
+  <p class="notification-detail-note">These are the current transaction details. The message above records the notification sent at that time.</p>
+  <dl class="notification-detail-grid">
+    {% for label, value in [
+      ('Borrower', transaction.borrower_name), ('Student / Faculty ID', transaction.school_id),
+      ('Equipment', transaction.equipment_name), ('Model', transaction.equipment_model), ('Asset code', transaction.asset_code), ('Issued serial numbers', transaction.unit_serials|join(', ') or 'Not yet assigned / legacy record'),
+      ('Location', transaction.location), ('Quantity', transaction.quantity),
+      ('Purpose', transaction.purpose), ('Status', transaction.status),
+      ('Borrow date', transaction.borrow_date), ('Due date', transaction.due_date),
+      ('Requested at', transaction.created_at), ('Reviewed by', transaction.reviewer_name),
+      ('Reviewed at', transaction.reviewed_at), ('Released at', transaction.released_at),
+      ('Return submitted at', transaction.return_requested_at), ('Returned at', transaction.returned_at),
+      ('Return condition', transaction.return_condition), ('Remarks', transaction.remarks)
+    ] %}
+    <div><dt>{{label}}</dt><dd>{{value if value is not none and value != '' else 'Not recorded'}}</dd></div>
+    {% endfor %}
+  </dl>
+  {% else %}
+  <p class="notification-detail-note">No related borrowing transaction is available for this notification.</p>
+  {% endif %}
+  <div class="notification-detail-actions">
+    <a class="btn" href="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notifications',scope=student_scope)}}{% else %}{{url_for('notifications')}}{% endif %}">Back to Notifications</a>
+    {% if transaction %}<a class="btn" href="{% if current_user.role in ['student','faculty'] %}{{url_for('student_requests',scope=student_scope)}}{% else %}{{url_for('requests_page')}}{% endif %}#request-{{transaction.id}}">{{'View Borrowing & Return' if current_user.role in ['student','faculty'] else 'Review / Approve Transaction'}}</a>{% endif %}
+    {% if transaction and (transaction.status in ['Released','Overdue'] or (transaction.status=='Returned' and transaction.return_condition in ['Fair','Damaged'])) %}<a class="btn" href="{% if current_user.role in ['student','faculty'] %}{{url_for('borrower_damage',scope=student_scope,id=transaction.id)}}{% else %}{{url_for('personnel_damage',id=transaction.id)}}{% endif %}">Condition Report / Cost</a>{% endif %}
+  </div>
+</div>
+{% endblock %}

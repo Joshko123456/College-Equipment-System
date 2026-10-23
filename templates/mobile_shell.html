@@ -1,0 +1,14 @@
+{% from 'mobile_icons.html' import icon %}
+{% set borrower = current_user.role in ['student','faculty'] %}
+{% set dashboard_url = url_for('student_dashboard',scope=student_scope) if borrower else url_for('admin_dashboard') %}
+{% set equipment_url = url_for('student_equipment',scope=student_scope) if borrower else url_for('equipment') %}
+{% set borrowing_url = url_for('student_requests',scope=student_scope) if borrower else url_for('requests_page') %}
+{% set notification_url = url_for('student_notifications',scope=student_scope) if borrower else url_for('notifications') %}
+<header class="phone-header"><a class="phone-brand" href="{{dashboard_url}}"><span class="phone-logo"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC logo"></span><span><b>BCC Equipment Services</b><small>{{'Student & Faculty Portal' if borrower else current_user.role|capitalize ~ ' Portal'}}</small></span></a><a class="phone-bell" href="{{notification_url}}" aria-label="Notifications">{{icon('bell')}}<b data-notification-badge {% if not notification_unread_count %}hidden{% endif %}>{{notification_unread_count}}</b></a></header>
+<nav class="phone-nav" aria-label="Mobile navigation">
+<a href="{{dashboard_url}}" class="{{'active' if request.endpoint in ['student_dashboard','admin_dashboard'] else ''}}">{{icon('home')}}<span>Home</span></a>
+<a href="{{equipment_url}}" class="{{'active' if request.endpoint in ['student_equipment','equipment'] else ''}}">{{icon('box')}}<span>Equipment</span></a>
+<a href="{{borrowing_url}}" class="{{'active' if request.endpoint in ['student_requests','requests_page','borrower_damage','personnel_damage'] else ''}}">{{icon('list')}}<span>Borrowing</span></a>
+<a href="{{notification_url}}" class="{{'active' if 'notification' in (request.endpoint or '') else ''}}"><span class="phone-nav-icon">{{icon('bell')}}<b data-notification-badge {% if not notification_unread_count %}hidden{% endif %}>{{notification_unread_count}}</b></span><span>Notifications</span></a>
+<button type="button" onclick="toggleSidebar()" aria-label="Open profile and main menu" aria-controls="sidebar">{{icon('user')}}<span>Profile</span></button>
+</nav>

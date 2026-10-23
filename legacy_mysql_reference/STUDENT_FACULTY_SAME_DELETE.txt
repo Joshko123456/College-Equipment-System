@@ -1,0 +1,7 @@
+STUDENT + FACULTY DELETE UPDATE
+
+Student and Faculty now use the same deletion behavior and confirmation flow.
+- If there is no borrowing history: account/record is deleted permanently.
+- If borrowing history exists: account is deactivated/archived so reports remain intact.
+- Both use the same confirmation modal style and wording.
+- Personnel Admin/Staff deletion remains separately protected.

@@ -1,0 +1,5 @@
+CREATIVE STUDENT / FACULTY INTRODUCTION
+
+Open /student/login for the redesigned welcome. Continue to Login opens the shared login form. Includes equipment photos, student/faculty introductions, borrowing guide, expandable questions, mobile layouts and dark-mode styling. Animation respects reduced-motion preferences.
+
+Replace application files, preserve your database/configuration, restart app.py, and refresh with Ctrl+F5. Previous features are retained.

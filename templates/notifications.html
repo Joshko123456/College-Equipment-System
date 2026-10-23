@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block heading %}Notifications{% endblock %}
+{% block content %}
+<div class="notifications-hero">
+  <div><span class="panel-kicker">LIVE ACCOUNT UPDATES</span><h2>Notification Center</h2><p>Borrowing requests, approvals, releases, due-date reminders, overdue alerts, and return confirmations appear here. New updates appear without sound.</p></div>
+</div>
+<div class="panel notification-panel">
+  <div class="panel-title"><div><span class="panel-kicker">RECENT UPDATES</span><h3>My Notifications</h3></div><span>{{rows|length}} notification{{'' if rows|length==1 else 's'}}</span></div>
+  <form method="post" action="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notifications_read_all',scope=student_scope)}}{% else %}{{url_for('notifications_read_all')}}{% endif %}" style="margin-bottom:16px">
+    <input type="hidden" name="_csrf" value="{{csrf_token}}">
+    <button type="submit" aria-label="Mark all notifications as read">Read All</button>
+    <small>Mark all your notifications as read. Messages remain available below.</small>
+  </form>
+  <div class="notification-list">
+  {% for n in rows %}
+    <a href="{% if current_user.role in ['student','faculty'] %}{{url_for('student_notification_detail',scope=student_scope,id=n.id)}}{% else %}{{url_for('notification_detail',id=n.id)}}{% endif %}" class="notice notice-link {{'unread' if not n.is_read else ''}}"><div class="notice-icon">🔔</div><div class="notice-copy"><b>{{n.message}}</b><small>{{n.created_at}} ? View full details</small></div>{% if not n.is_read %}<span class="new-pill">NEW</span>{% endif %}</a>
+  {% else %}
+    <div class="empty-state"><span>🔔</span><b>No notifications yet</b><small>New borrowing and equipment updates will appear here automatically.</small></div>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}

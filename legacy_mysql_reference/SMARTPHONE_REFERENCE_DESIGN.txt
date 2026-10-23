@@ -1,0 +1,9 @@
+SMARTPHONE DESIGN UPDATE
+
+On screens up to 767px wide, Admin, Staff, Faculty and Student accounts use the reference-inspired mobile interface: compact logo header, green illustrated welcome, two-column statistics, photo transaction cards, notification previews and fixed bottom navigation. Desktop keeps the existing interface.
+
+Profile opens your account and full main menu, including sign out, theme and sound settings. Admin retains People & Accounts and Reports; Staff retains authorized operations. Statistics, borrowing records and notifications use actual account data, not the reference image sample values.
+
+INSTALL: Back up the application and database. Replace application files while preserving your database connection configuration and uploaded images. Restart app.py and hard-refresh the browser. No database replacement or SQL reimport is required for this design update.
+
+VALIDATION: All four dashboard routes, role-specific navigation, notification ownership filters, templates and linked assets checked using simulated database responses. Browser visual verification and live XAMPP testing remain to be done locally.

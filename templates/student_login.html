@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Student & Faculty Login | BCC Equipment Services{% endblock %}
+{% block guest %}
+<div class="auth-page student-auth">
+  <div class="auth-shell">
+    <section class="auth-brand">
+      <div class="auth-brand-inner">
+        <img class="auth-logo" src="{{url_for('static',filename='images/bcc-logo.png')}}" alt="BCC college mark">
+        <span class="auth-kicker">BCC • STUDENT & FACULTY SERVICES</span>
+        <h1>College Equipment<br>Borrowing Portal</h1>
+        <p>Reserve and monitor college equipment for approved academic activities in one secure portal.</p>
+        <div class="auth-features"><span>✓ Check availability</span><span>✓ Submit borrowing requests</span><span>✓ Track return status</span></div>
+      </div>
+      <div class="auth-watermark">BCC</div>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-panel-inner">
+        <div class="mini-brand"><img src="{{url_for('static',filename='images/bcc-logo.png')}}" alt=""><div><b>BCC</b><small>Equipment Services</small></div></div>
+        <a class="welcome-back" href="{{url_for('student_login')}}">← Back to welcome</a>
+        <span class="portal-pill">Student & Faculty Portal</span>
+        <h2>Welcome back</h2>
+        <p class="auth-subtitle">Sign in using your registered Student / Faculty ID and personal password.</p>
+        {% if request.args.get('expired') %}<div class="alert danger"><span>!</span><div>Your borrowing session expired or is no longer valid. Please sign in again.</div></div>{% endif %}
+        {% if request.args.get('notice') %}<div class="alert {{request.args.get('kind','success')}}"><span>{{'✓' if request.args.get('kind','success')=='success' else '!'}}</span><div>{{request.args.get('notice')}}</div></div>{% endif %}
+        {% if student_error %}<div class="alert danger"><span>!</span><div>{{student_error}}</div></div>{% endif %}
+        <form method="post" class="auth-form">
+          <label>Student / Faculty ID</label>
+          <div class="input-shell"><span>▦</span><input name="school_id" required autocomplete="username" placeholder="Enter your Student / Faculty ID"></div>
+          <label>Password</label>
+          <div class="input-shell"><span>◆</span><input id="studentPassword" type="password" name="password" required autocomplete="current-password" placeholder="Enter your password"><button type="button" class="peek" onclick="togglePassword('studentPassword',this)">Show</button></div>
+          <button class="primary-btn auth-submit">Sign In to Student & Faculty Portal <b>→</b></button>
+        </form>
+        <div class="activation-box"><div class="activation-icon">✦</div><div><b>First time using the portal?</b><span>Students and faculty activate their pre-registered ID and create their own private password.</span></div><a href="{{url_for('student_register')}}">Activate Account</a></div>
+        <div class="auth-note">For registered college students and faculty. Keep your account password private.</div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

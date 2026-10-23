@@ -1,0 +1,11 @@
+Agreement popup button visibility fix
+====================================
+
+Fixed the Student/Faculty Borrower Agreement modal so the bottom controls remain visible even on shorter screens.
+
+Changes:
+- The modal now uses a flex-column layout constrained to the browser viewport.
+- Only the agreement text section scrolls.
+- The consent checkbox, Cancel/Sign Out button, and Agree button remain visible at the bottom.
+- Added short-screen responsive rules for laptop/browser windows with limited vertical height.
+- The same fix applies to Student account activation and Faculty/Student first-access agreement pages.

@@ -1,0 +1,19 @@
+MOBILE RESPONSIVE UPDATE
+========================
+
+The web system now adapts to smartphones and tablets without changing the desktop layout.
+
+Included improvements:
+- Dashboard cards reflow for phone widths.
+- Wide data tables become stacked, labeled record cards on smartphones.
+- Student/Faculty directories remain readable without horizontal overflow.
+- Borrowing/return transaction actions fit small screens.
+- Equipment cards and images resize to phone width.
+- Add/Edit/Create forms become one-column layouts.
+- Modals fit within the phone viewport and remain scrollable.
+- People & Accounts, notifications, reports, and transaction pages are responsive.
+- Touch controls use phone-friendly sizes.
+- Student/Faculty welcome and login-related layouts scale down cleanly.
+- Landscape phone support was added for short screens.
+
+Desktop and laptop layouts remain unchanged.

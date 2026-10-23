@@ -1,0 +1,9 @@
+UPDATE: ADMIN / STAFF DELETE AND BORROWING COSTS
+
+Back up your database. Replace application files, keep your existing database and .env configuration, then restart app.py. The archived column is added automatically; do not reimport database.sql over existing records.
+
+Admin and staff: Equipment > Delete Equipment removes the equipment from all catalogs. Borrowing and serial/cost history are retained. Pending, Approved, Released and Overdue loans block deletion; complete or reject them first.
+
+Borrowing & Return: select Fair or Damaged and type the TOTAL condition cost for that student/faculty borrowing. It is not multiplied by quantity. Good is always PHP 0.00.
+
+For an existing condition report, open Condition Report / Cost > Enter / Edit Damage Cost. Enter the total amount and explanation. Settled charges cannot be edited. Students/faculty cannot set costs; they explain what happened and separately accept the assessed amount.

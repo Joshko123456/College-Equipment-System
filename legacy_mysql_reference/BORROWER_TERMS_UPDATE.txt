@@ -1,0 +1,4 @@
+BORROWER AGREEMENT
+Students must agree before activating their account. Admin-created faculty accounts must personally agree after signing in, before they can use the portal. Existing student/faculty accounts without an acceptance record must also agree once. Acceptance version and timestamp are recorded. Staff cannot accept on behalf of a borrower. The exact assessed cost remains a separate acknowledgment.
+
+Keep your database, replace application files, restart app.py. The acceptance table is created automatically.
